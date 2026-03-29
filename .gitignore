@@ -1,0 +1,41 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.pyc
+
+# Node
+node_modules/
+dist/
+dist-runtime/
+
+# Secrets / local state
+.env
+.env.local
+*.pem
+*.key
+*.token
+openclaw-state/
+.openclaw/
+
+# Databases / runtime artifacts
+*.db
+*.sqlite
+*.sqlite3
+fredos_data/
+logs/
+*.log
+*.err
+*.out
+
+# Build / vendor blobs
+*.tar.gz
+*.zip
+coverage/
+

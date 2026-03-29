@@ -1,0 +1,52 @@
+name: router-agent
+role: router
+model: small-fast-model
+prompt_file: app/agents/prompts/router_prompt.md
+
+governance:
+  can_read_fredos: true
+  can_write_fredos: false
+  can_use_exec: false
+  can_access_filesystem: false
+  can_access_external_connectors: false
+  requires_retrieval_before_reasoning: true
+
+runtime:
+  session_profile: controller-session
+  trust_level: trusted-non-exec
+  session_persistence: compactable
+  compaction_policy: keep-routing-summary-only
+  can_coordinate_sessions: true
+  primary_handoff_targets: [research, operator, memory_manager, executor, reviewer]
+
+retrieval_policy:
+  default_mode: A
+  must_retrieve_before_action: true
+  allowed_modes: [A]
+
+output_contract:
+  response_shape: route-decision
+  must_include: [target_role, project_id, work_package, escalation_condition]
+
+escalation:
+  may_escalate_to: [operator, executor, reviewer]
+  requires_review_before_exec: true
+
+tools:
+  - name: list_projects
+    description: List all active projects to resolve a project identifier before routing.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/projects"
+
+  - name: retrieve_project_overview
+    description: Retrieve Mode A project context when routing depends on current project state.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/project-overview/{project_id}"
+    parameters:
+      - name: project_id
+        type: integer
+        required: true

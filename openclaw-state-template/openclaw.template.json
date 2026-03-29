@@ -1,0 +1,197 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.25"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434",
+        "apiKey": "OLLAMA_API_KEY",
+        "api": "ollama",
+        "models": [
+          {
+            "id": "qwen3.5:latest",
+            "name": "qwen3.5:latest",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 262144,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ollama/qwen3.5:latest"
+      },
+      "models": {
+        "ollama/qwen3.5:latest": {}
+      },
+      "workspace": "__STATE_DIR__\\workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "subagents": {
+        "maxConcurrent": 2,
+        "maxSpawnDepth": 1,
+        "maxChildrenPerAgent": 2,
+        "archiveAfterMinutes": 60,
+        "runTimeoutSeconds": 900
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "agentDir": "__STATE_DIR__\\agents\\main\\agent",
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "alsoAllow": [
+            "fredos_create_task",
+            "fredos_retrieve_context"
+          ]
+        }
+      },
+      {
+        "id": "coder-pm",
+        "default": true,
+        "name": "coder-pm",
+        "workspace": "__STATE_DIR__\\workspace-coder-pm",
+        "agentDir": "__STATE_DIR__\\agents\\coder-pm\\agent",
+        "thinkingDefault": "medium",
+        "reasoningDefault": "on",
+        "fastModeDefault": false,
+        "identity": {
+          "name": "Coder PM",
+          "theme": "coding project manager"
+        },
+        "subagents": {
+          "allowAgents": [
+            "coding-agent",
+            "memory-agent"
+          ]
+        },
+        "tools": {
+          "profile": "coding-project",
+          "alsoAllow": [
+            "fredos_list_projects",
+            "fredos_create_task",
+            "fredos_retrieve_context",
+            "fredos_update_task",
+            "fredos_write_structured",
+            "fredos_link_entities"
+          ]
+        }
+      },
+      {
+        "id": "coding-agent",
+        "name": "coding-agent",
+        "workspace": "__STATE_DIR__\\workspace-coding-agent",
+        "agentDir": "__STATE_DIR__\\agents\\coding-agent\\agent",
+        "thinkingDefault": "medium",
+        "reasoningDefault": "on",
+        "fastModeDefault": false,
+        "identity": {
+          "name": "Coding Agent",
+          "theme": "bounded implementation worker"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "coding"
+        }
+      },
+      {
+        "id": "memory-agent",
+        "name": "memory-agent",
+        "workspace": "__STATE_DIR__\\workspace-memory-agent",
+        "agentDir": "__STATE_DIR__\\agents\\memory-agent\\agent",
+        "thinkingDefault": "medium",
+        "reasoningDefault": "on",
+        "fastModeDefault": false,
+        "identity": {
+          "name": "Memory Agent",
+          "theme": "bounded memory support worker"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "minimal",
+          "alsoAllow": [
+            "read",
+            "write",
+            "edit",
+            "web_search",
+            "web_fetch",
+            "fredos_list_projects",
+            "fredos_retrieve_context"
+          ]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "coding",
+    "subagents": {
+      "tools": {
+        "deny": [
+          "fredos_create_task",
+          "fredos_update_task",
+          "fredos_write_structured",
+          "fredos_link_entities"
+        ]
+      }
+    },
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "duckduckgo"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "__SET_GATEWAY_TOKEN__"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "plugins": {
+    "entries": {
+      "duckduckgo": {
+        "enabled": true
+      },
+      "fredos": {
+        "enabled": true
+      }
+    }
+  }
+}
+

@@ -1,0 +1,41 @@
+{
+  "id": "fredos",
+  "name": "FredOS Mainframe",
+  "description": "Grants agents access to the FredOS L0-L4 canonical memory architecture.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "baseUrl": {
+        "type": "string",
+        "default": "http://localhost:8000"
+      },
+      "projectMap": {
+        "type": "object",
+        "description": "Optional agent-to-project mapping used by bridge hooks. Keys are OpenClaw agent ids, values are FredOS project ids.",
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "default": {}
+      },
+      "fallbackProjectId": {
+        "type": "integer",
+        "description": "Optional FredOS project id used by bridge hooks when an agent id is not present in projectMap."
+      }
+    }
+  },
+  "uiHints": {
+    "baseUrl": {
+      "label": "FredOS API URL",
+      "help": "Where is the FredOS memory engine running?"
+    },
+    "projectMap": {
+      "label": "Agent Project Map",
+      "help": "Map OpenClaw agent ids to FredOS project ids for session bridge ingestion."
+    },
+    "fallbackProjectId": {
+      "label": "Fallback Project ID",
+      "help": "Use this FredOS project when no explicit mapping exists."
+    }
+  }
+}

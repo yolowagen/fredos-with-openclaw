@@ -1,0 +1,31 @@
+name: memory-curator-agent
+model: medium-model
+prompt_file: app/agents/prompts/memory_curator_prompt.md
+
+tools:
+  - name: add_session_summary
+    description: Add a formal summary of tasks and decisions to a session. 
+    type: http
+    config:
+      method: POST
+      url: "http://localhost:8000/api/sessions/{session_id}/summaries"
+      body_schema:
+        summary: string
+        open_loops: string
+        extracted_tasks: string
+        extracted_decisions: string
+    parameters:
+      - name: session_id
+        type: integer
+        required: true
+
+  - name: consolidate_session
+    description: Trigger the backend to commit the session summary to long-term project memory.
+    type: http
+    config:
+      method: POST
+      url: "http://localhost:8000/api/consolidate/{session_id}"
+    parameters:
+      - name: session_id
+        type: integer
+        required: true

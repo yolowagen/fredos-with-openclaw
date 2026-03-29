@@ -1,0 +1,29 @@
+name: chief-of-staff-agent
+model: large-model
+prompt_file: app/agents/prompts/chief_of_staff_prompt.md
+
+tools:
+  - name: list_projects
+    description: Get all projects and their status
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/projects"
+
+  - name: list_tasks
+    description: Get all tasks
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/tasks"
+
+  - name: retrieve_project_overview
+    description: Get a detailed view of a specific project (Mode A)
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/project-overview/{project_id}"
+    parameters:
+      - name: project_id
+        type: integer
+        required: true

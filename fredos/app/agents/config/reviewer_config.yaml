@@ -1,0 +1,52 @@
+name: reviewer-agent
+role: reviewer
+model: medium-model
+prompt_file: app/agents/prompts/reviewer_prompt.md
+
+governance:
+  can_read_fredos: true
+  can_write_fredos: conditional
+  can_use_exec: false
+  can_access_filesystem: false
+  can_access_external_connectors: conditional
+  requires_retrieval_before_reasoning: true
+
+runtime:
+  session_profile: audit-session
+  trust_level: trusted-auditor
+  session_persistence: persistent-summary
+  compaction_policy: keep-review-trace
+  can_coordinate_sessions: true
+  primary_handoff_targets: [operator, memory_manager]
+
+retrieval_policy:
+  default_mode: A
+  must_retrieve_before_action: true
+  allowed_modes: [A, B, D]
+
+output_contract:
+  response_shape: review-verdict
+  must_include: [retrieval_source, verdict, rationale, follow_up]
+
+escalation:
+  may_escalate_to: [operator, memory_manager]
+  requires_review_before_exec: true
+
+tools:
+  - name: retrieve_project_overview
+    description: Retrieve Mode A context before approving or rejecting a durable write.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/project-overview/{project_id}"
+    parameters:
+      - name: project_id
+        type: integer
+        required: true
+
+  - name: list_tasks
+    description: Review current task state before issuing feedback.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/tasks"

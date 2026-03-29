@@ -1,0 +1,74 @@
+name: memory-manager-agent
+role: memory_manager
+model: medium-model
+prompt_file: app/agents/prompts/memory_manager_prompt.md
+
+governance:
+  can_read_fredos: true
+  can_write_fredos: true
+  can_use_exec: false
+  can_access_filesystem: false
+  can_access_external_connectors: false
+  requires_retrieval_before_reasoning: true
+
+runtime:
+  session_profile: write-governed-session
+  trust_level: trusted-memory-curation
+  session_persistence: persistent-summary
+  compaction_policy: consolidate-then-compact
+  can_coordinate_sessions: true
+  primary_handoff_targets: [reviewer]
+
+retrieval_policy:
+  default_mode: A
+  must_retrieve_before_action: true
+  allowed_modes: [A, D]
+
+output_contract:
+  response_shape: memory-curation-report
+  must_include: [source_session, persisted_records, skipped_records, review_status]
+
+escalation:
+  may_escalate_to: [reviewer]
+  requires_review_before_exec: true
+
+tools:
+  - name: retrieve_project_overview
+    description: Retrieve Mode A context before consolidating or curating memory.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/project-overview/{project_id}"
+    parameters:
+      - name: project_id
+        type: integer
+        required: true
+
+  - name: add_session_summary
+    description: Add a formal session summary before consolidation.
+    type: http
+    config:
+      method: POST
+      url: "http://localhost:8000/api/sessions/{session_id}/summaries"
+    parameters:
+      - name: session_id
+        type: integer
+        required: true
+
+  - name: consolidate_session
+    description: Trigger the backend to consolidate a session into durable memory.
+    type: http
+    config:
+      method: POST
+      url: "http://localhost:8000/api/consolidate/{session_id}"
+    parameters:
+      - name: session_id
+        type: integer
+        required: true
+
+  - name: fredos_link_entities
+    description: Link durable records through the governed entity-link wrapper.
+    type: http
+    config:
+      method: POST
+      url: "http://localhost:8000/api/fredos/link-entities"

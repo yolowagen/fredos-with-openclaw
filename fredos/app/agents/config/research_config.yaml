@@ -1,0 +1,56 @@
+name: research-agent
+role: research
+model: large-model
+prompt_file: app/agents/prompts/research_prompt.md
+
+governance:
+  can_read_fredos: true
+  can_write_fredos: false
+  can_use_exec: false
+  can_access_filesystem: false
+  can_access_external_connectors: true
+  requires_retrieval_before_reasoning: true
+
+runtime:
+  session_profile: read-only-session
+  trust_level: trusted-read-only
+  session_persistence: compactable
+  compaction_policy: keep-findings-summary
+  can_coordinate_sessions: false
+  primary_handoff_targets: [operator, reviewer]
+
+retrieval_policy:
+  default_mode: C
+  must_retrieve_before_action: true
+  allowed_modes: [B, C]
+
+output_contract:
+  response_shape: research-brief
+  must_include: [retrieval_source, findings, risks, recommended_next_step]
+
+escalation:
+  may_escalate_to: [operator, reviewer]
+  requires_review_before_exec: true
+
+tools:
+  - name: retrieve_research
+    description: Pull Mode C research context before generating findings.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/research/{project_id}"
+    parameters:
+      - name: project_id
+        type: integer
+        required: true
+
+  - name: retrieve_task_support
+    description: Pull Mode B task support context when research is tied to a task.
+    type: http
+    config:
+      method: GET
+      url: "http://localhost:8000/api/retrieve/task-support/{task_id}"
+    parameters:
+      - name: task_id
+        type: integer
+        required: true

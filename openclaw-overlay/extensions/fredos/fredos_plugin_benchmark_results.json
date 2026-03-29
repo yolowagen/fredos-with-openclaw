@@ -1,0 +1,46 @@
+{
+  "expectedTools": [
+    "fredos_retrieve_context",
+    "fredos_create_task",
+    "fredos_write_structured",
+    "fredos_update_task",
+    "fredos_link_entities"
+  ],
+  "registeredTools": [
+    "fredos_retrieve_context",
+    "fredos_create_task",
+    "fredos_write_structured",
+    "fredos_update_task",
+    "fredos_link_entities"
+  ],
+  "metrics": {
+    "registered_tool_coverage": 1,
+    "plugin_write_path_success": 1
+  },
+  "samples": {
+    "writeResult": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"source\": \"http://127.0.0.1:8000/api/fredos/write-structured\",\n  \"data\": {\n    \"record_type\": \"knowledge\",\n    \"record_id\": 2,\n    \"project_id\": 4,\n    \"status\": \"created\"\n  }\n}"
+        }
+      ]
+    },
+    "updateResult": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"source\": \"http://127.0.0.1:8000/api/fredos/tasks/12\",\n  \"data\": {\n    \"record_type\": \"task\",\n    \"record_id\": 12,\n    \"project_id\": 4,\n    \"status\": \"updated\"\n  }\n}"
+        }
+      ]
+    },
+    "linkResult": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"source\": \"http://127.0.0.1:8000/api/fredos/link-entities\",\n  \"data\": {\n    \"record_type\": \"memory_link\",\n    \"record_id\": 23,\n    \"project_id\": 4,\n    \"status\": \"created\"\n  }\n}"
+        }
+      ]
+    }
+  }
+}
